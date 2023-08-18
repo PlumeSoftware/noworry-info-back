@@ -28,28 +28,37 @@ export class Order {
   @JoinColumn()
     payer: User
 
-  @Column({ name: 'city', comment: '刷签城市' })
-    city: string
-
   @OneToOne(() => SysUser)
   @JoinColumn()
     inCharge: SysUser
 
-  @Column({ name: 'status', type: 'int', comment: '订单状态' })
+  @Column({ name: 'city', comment: '刷签城市' })
+    city: string
+
+  @Column({ comment: '是否加急' })
+    isWorry: boolean
+
+  @Column({ name: 'status', type: 'int', comment: '订单状态', default: OrderStatus.CREATED })
     status: OrderStatus
-
-  @CreateDateColumn({ name: 'create_time', update: false })
-    createTime: Date
-
-  @UpdateDateColumn({ name: 'update_time', comment: '最后修改时间' })
-    updateTime: Date
 
   @Column({ comment: '刷签人数', unsigned: true, default: 1, nullable: false })
     count: number
+
+  @Column({ name: 'expected_date_from', comment: '期望的开始时间' })
+    expectedDateFrom: Date
+
+  @Column({ name: 'expected_date_to', comment: '期望的结束时间' })
+    expectedDateTo: Date
 
   @Column({ name: 'initial_price', comment: '原价' })
     initialPrice: number
 
   @Column({ name: 'ending_should_pay', comment: '最终应付' })
     endingShouldPay: number
+
+  @CreateDateColumn({ name: 'create_time', update: false })
+    createTime: Date
+
+  @UpdateDateColumn({ name: 'update_time', comment: '最后修改时间' })
+    updateTime: Date
 }

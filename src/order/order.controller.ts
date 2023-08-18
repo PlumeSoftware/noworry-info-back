@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
 import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user-profile.guard'
 import { OrderService } from './order.service'
-import { CreateOrderDto } from './dto/create-order.dto'
+import { CreateOrderTransformedDto } from './dto/create-order.dto'
 
 @Controller('order')
 export class OrderController {
@@ -9,7 +9,7 @@ export class OrderController {
 
   @UseGuards(SysUserAuthGuard)
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
+  create(@Body() createOrderDto: CreateOrderTransformedDto) {
     return this.orderService.create(createOrderDto)
   }
 

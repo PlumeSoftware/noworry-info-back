@@ -5,7 +5,7 @@ import { User } from 'src/user/entities/user.entity'
 import { SysUser } from 'src/sys-user/entities/sys-user.entity'
 import { AtomOrder } from 'src/atom-order/entities/atom-order.entity'
 import { Order } from './entities/order.entity'
-import type { CreateOrderDto } from './dto/create-order.dto'
+import type { CreateOrderTransformedDto } from './dto/create-order.dto'
 
 @Injectable()
 export class OrderService {
@@ -15,14 +15,18 @@ export class OrderService {
     @InjectRepository(SysUser) private readonly sysUserRepository: Repository<SysUser>,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto) {
+  async create(createOrderDto: CreateOrderTransformedDto) {
     this.orderRepository.manager.transaction(async (transactionalEntityManager) => {
       const order = new Order()
       const orderPayer = await this.userRepository.findOne({ where: { uuid: createOrderDto.payer } })
       order.city = createOrderDto.city
       order.payer = orderPayer
+      order.expectedDateFrom = createOrderDto.expectedDateFrom
+      order.expectedDateTo = createOrderDto.expectedDateTo
+      order.isWorry = createOrderDto.isWorry
       order.inCharge = await this.sysUserRepository.findOne({ where: { uuid: createOrderDto.charger } })
-      transactionalEntityManager.insert(Order, order)
+      order.count = createOrderDto.details.length
+      await transactionalEntityManager.insert(Order, order)
 
       // atom order
       for (const atomInfo of createOrderDto.details) {

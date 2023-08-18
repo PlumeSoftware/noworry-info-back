@@ -4,6 +4,14 @@ export type OrderDetail = Pick<AtomOrder, 'customerName' | 'customerPhone' | 'cu
 export interface CreateOrderDto {
   payer: string
   city: string
-  charger: string // get from token
+  expectedDateFrom: number
+  expectedDateTo: number
+  isWorry: boolean
   details: OrderDetail[]
 }
+export type CreateOrderTransformedDto =
+{ charger: string /* get from token */
+  expectedDateFrom: Date /* after pipes transform */
+  expectedDateTo: Date /* after pipes transform */
+}
+& Omit<CreateOrderDto, 'expectedDateFrom' | 'expectedDateTo'>
