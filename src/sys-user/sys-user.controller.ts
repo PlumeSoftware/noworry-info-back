@@ -1,12 +1,16 @@
-import { BadRequestException, Body, Controller, Get, Ip, Post, UseFilters } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, Ip, Param, ParseUUIDPipe, Patch, Post, UseFilters, UseGuards } from '@nestjs/common'
 import { DBDuplicateExceptionFilter } from 'src/filters/db-duplicate.filter'
 import { UnauthorizedExceptionFilter } from 'src/filters/BuiltInException'
+import { NeedRole } from 'src/decorators/needRole'
+import { SysUserRoleGuard } from 'src/sys-role/guard/sys-role-permission.guard'
 import { SysUserService } from './sys-user.service'
 import { CreateSysUserDto } from './dto/create-sys-user.dto'
 import { LoginSysUserDto } from './dto/login-sys-user.dto'
 import { VerifyCreateUserDtoPipe } from './pipes/sys-user-login.pipe'
+import { SysUserAuthGuard } from './guard/sys-user.guard'
+import { UpdateSysUserDto } from './dto/update-sys-user.dto'
 
-@Controller('sysuser')
+@Controller('sys-user')
 export class SysUserController {
   constructor(private readonly userService: SysUserService) {}
 
@@ -25,21 +29,26 @@ export class SysUserController {
     return this.userService.login({ ...loginSysUserDto, ip })
   }
 
+  @NeedRole('read', 'SysUser')// 需要SysUser的read权限
+  @UseGuards(SysUserAuthGuard/* 验证登录 */, SysUserRoleGuard/* 验证权限 */)
   @Get()
-  findAll() {
-    return this.userService.findAll()
+  async findAll() {
+    return await this.userService.findAll()
   }
 
-  // @UseGuards(UserAuthGuard) // 使用用户认证守卫,只保证JWT的有效性
-  // @Get(':uuid')
-  // getProfile(@Param('uuid') uuid: string) {
-  //   return this.userService.findOne(uuid)
-  // }
+  @NeedRole('read', 'SysUser')// 需要SysUser的read权限
+  @UseGuards(SysUserAuthGuard/* 验证登录 */, SysUserRoleGuard/* 验证权限 */)
+  @Get(':uuid')
+  async getProfile(@Param('uuid', new ParseUUIDPipe({ version: '5' })) uuid: string) {
+    return await this.userService.findOne(uuid)
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateSysUserDto) {
-  //   return this.userService.update(+id, updateUserDto)
-  // }
+  @NeedRole('update', 'SysUser')// 需要SysUser的read权限
+  @UseGuards(SysUserAuthGuard/* 验证登录 */, SysUserRoleGuard/* 验证权限 */)
+  @Patch(':uuid')
+  async update(@Param('uuid') uuid: string, @Body() updateUserDto: UpdateSysUserDto) {
+    return await this.userService.update(uuid, updateUserDto)
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

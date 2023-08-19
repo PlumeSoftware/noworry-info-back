@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
-import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user-profile.guard'
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common'
+import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user.guard'
 import { OrderService } from './order.service'
 import { CreateOrderTransformedDto } from './dto/create-order.dto'
+import { OrderCreateValidateAndTransformPipe } from './pipes/create-order.pipe'
 
 @Controller('order')
 export class OrderController {
@@ -9,7 +10,7 @@ export class OrderController {
 
   @UseGuards(SysUserAuthGuard)
   @Post()
-  create(@Body() createOrderDto: CreateOrderTransformedDto) {
+  create(@Body(OrderCreateValidateAndTransformPipe) createOrderDto: CreateOrderTransformedDto) {
     return this.orderService.create(createOrderDto)
   }
 
@@ -18,9 +19,10 @@ export class OrderController {
     return this.orderService.findAll()
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id)
+  @UseGuards(SysUserAuthGuard)
+  @Get(':uuid')
+  findOne(@Param('uuid', new ParseUUIDPipe({ version: '5' })) uuid: string) {
+    return this.orderService.findOne(uuid)
   }
 
   // @Patch(':id')

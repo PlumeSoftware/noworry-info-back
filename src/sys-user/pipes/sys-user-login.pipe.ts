@@ -14,15 +14,17 @@ export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, 
   constructor(@Inject(ConfigService) private configService: ConfigService) {}
   transform(value: CreateSysUserDto, _: ArgumentMetadata): CreateSysUserDto {
     if (!VerifyCreateUserDtoPipe.verifyFileds(value))
-      throw new BadRequestException({ cause: 'missing require fields', errcode: ErrCode.WxLoginWithoutCode })
+      throw new BadRequestException({ cause: 'missing require fields', errcode: ErrCode.MissingSomeFileds })
     if (!VerifyCreateUserDtoPipe.verifyUserName(value.userName))
-      throw new BadRequestException({ cause: 'length of name should <30', errcode: ErrCode.WxLoginWithoutCode })
+      throw new BadRequestException({ cause: 'length of name should <30', errcode: ErrCode.PswTooLong })
     if ('email' in value && !VerifyCreateUserDtoPipe.verifyEmail(value.email))
-      throw new BadRequestException({ cause: 'email is invalid', errcode: ErrCode.WxLoginWithoutCode })
+      throw new BadRequestException({ cause: 'email is invalid', errcode: ErrCode.InvalidEmail })
     // 还原前端加密的密码，注意要在解密后才对密码进行验证
     // value.psw = AES.encrypt(this.configService.get(secret.decryptFeKey), body.psw).toString()
+    if ('role' in value)
+      throw new BadRequestException({ cause: 'role is invalid', errcode: ErrCode.UnknownError })
     if (!VerifyCreateUserDtoPipe.verifyPsw(value.psw))
-      throw new BadRequestException({ cause: 'psw is invalid', errcode: ErrCode.WxLoginWithoutCode })
+      throw new BadRequestException({ cause: 'psw is invalid', errcode: ErrCode.InvalidPsw })
 
     return value
   }

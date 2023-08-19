@@ -22,7 +22,7 @@ export class UserService {
 
     const res = await this.userRepository.insert({ wx_openid: createUserDto.openId, create_ip: createUserDto.ip })
 
-    return { token: this.authService.assignToken(res.generatedMaps[0].uuid) }
+    return { token: await this.authService.assignToken(res.generatedMaps[0].uuid) }
   }
 
   findAll() {

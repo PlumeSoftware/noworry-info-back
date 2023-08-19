@@ -6,7 +6,6 @@ export default () => {
       port: Number.parseInt(env.SERVER_PORT, 10) || 3000,
       host: env.SERVER_HOST || 'localhost',
     },
-
     database: {
       host: env.DB_HOST,
       port: Number.parseInt(env.DB_PORT, 10) || 3306,
@@ -26,6 +25,11 @@ export default () => {
     },
     jwt: {
       expiresIn: env.JWT_EXPIRES_IN,
+    },
+    superAdmin: {
+      name: env.SUPERADMIN_NAME || 'superAdmin',
+      email: env.SUPERADMIN_EMAIL || 'admin@noworry.com',
+      psw: env.SUPERADMIN_PSW || '_Noworry123',
     },
   })
 }

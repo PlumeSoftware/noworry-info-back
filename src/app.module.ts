@@ -9,11 +9,12 @@ import { OrderModule } from './order/order.module'
 import cfg from './config/cfg'
 import { UserModule } from './user/user.module'
 import { AtomOrderModule } from './atom-order/atom-order.module'
+import { SysRoleModule } from './sys-role/sys-role.module';
 
 @Module({
   imports: [UserModule, SysUserModule, DBModule, AuthModule, ConfigModule.forRoot({
     load: [cfg],
-  }), OrderModule, AtomOrderModule],
+  }), OrderModule, AtomOrderModule, SysRoleModule],
   controllers: [AppController],
   providers: [AppService],
 })

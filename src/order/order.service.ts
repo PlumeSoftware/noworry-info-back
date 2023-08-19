@@ -29,25 +29,27 @@ export class OrderService {
       await transactionalEntityManager.insert(Order, order)
 
       // atom order
+      const atomInfos = []
       for (const atomInfo of createOrderDto.details) {
         const atomOrder = new AtomOrder()
         atomOrder.belongTo = order
         atomOrder.customerName = atomInfo.customerName
         atomOrder.customerPhone = atomInfo.customerPhone
         atomOrder.customerEmail = atomInfo.customerEmail
-        await transactionalEntityManager.insert(AtomOrder, atomOrder)
+        atomInfos.push(atomOrder)
       }
+      await transactionalEntityManager.insert(AtomOrder, atomInfos)
     })
 
-    return ''
+    return null
   }
 
   findAll() {
     return 'This action returns all order'
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`
+  findOne(uuid: string) {
+    return `This action returns a #${uuid} order`
   }
 
   update(id: number) {

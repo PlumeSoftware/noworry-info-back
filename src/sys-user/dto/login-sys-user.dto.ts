@@ -4,7 +4,7 @@ export type LoginSysUserDto = {
   psw: string
 } & LoginMustContain // 必须有email或phone其中之一
 
-export interface SysTokenContain {
+export interface SysUserTokenContain {
   uuid: string
   userName: string
   email: string

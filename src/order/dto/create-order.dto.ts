@@ -10,7 +10,7 @@ export interface CreateOrderDto {
   details: OrderDetail[]
 }
 export type CreateOrderTransformedDto =
-{ charger: string /* get from token */
+{ charger: string /* get from token & after pipes transform */
   expectedDateFrom: Date /* after pipes transform */
   expectedDateTo: Date /* after pipes transform */
 }
