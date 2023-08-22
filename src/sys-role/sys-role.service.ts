@@ -1,35 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { SysUserService } from 'src/sys-user/sys-user.service'
-import type { CreateSysUserDto } from 'src/sys-user/dto/create-sys-user.dto'
-import { ConfigService } from '@nestjs/config'
+import { SysUser } from 'src/sys-user/entities/sys-user.entity'
 import type { CreateSysRoleDto } from './dto/create-sys-role.dto'
-import type { UpdateSysRoleDto } from './dto/update-sys-role.dto'
 import { SysRole } from './entities/sys-role.entity'
 
 @Injectable()
 export class SysRoleService {
   constructor(
     @InjectRepository(SysRole) private readonly sysRoleRepository: Repository<SysRole>,
-    private readonly userService: SysUserService,
-    private configService: ConfigService,
-  ) {
-    // 在创建SysRoleService时默认插入一个具有全部权限的SysUser
-    const king = new SysRole()
-    king.name = 'king'
-    king.permissions = [{ action: 'manage', subject: 'all' }]
-    this.sysRoleRepository.save(king).then((king) => {
-      const createKingDTO: CreateSysUserDto & { ip: string; role: string } = {
-        ip: 'unknow',
-        role: king.name,
-        userName: this.configService.get('superAdmin.name'),
-        psw: this.configService.get('superAdmin.psw'),
-        email: this.configService.get('superAdmin.email'),
-      }
-      this.userService.create(createKingDTO)
-    }).catch(() => {})
-  }
+  ) {}
 
   async create(createSysRoleDto: CreateSysRoleDto) {
     await this.sysRoleRepository.insert(
@@ -41,11 +21,32 @@ export class SysRoleService {
     return 'This action returns all sysRole'
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sysRole`
+  findOne(roleName: string): Promise<SysRole>
+  findOne(id: number): Promise<SysRole>
+  findOne(findCondition: string | number): Promise<SysRole> {
+    if (typeof findCondition === 'string')
+      return this.sysRoleRepository.findOne({ where: { name: findCondition } })
+    if (typeof findCondition === 'number')
+      return this.sysRoleRepository.findOne({ where: { id: findCondition } })
   }
 
-  update(id: number, updateSysRoleDto: UpdateSysRoleDto) {
+  getSysUserRole(sysUserUuid: string): Promise<SysRole> {
+    const queryBuilder = this.sysRoleRepository.createQueryBuilder('sys_role')
+
+    return queryBuilder
+      .where(`
+        sys_role.id = ${
+        queryBuilder.subQuery()
+        .select('sys_user.sys_role_id')
+        .from(SysUser, 'sys_user')
+        .where('sys_user.uuid = :sys_user_uuid')
+        .setParameter('sys_user_uuid', sysUserUuid)
+        .getQuery()
+      }`)
+      .getOne()
+  }
+
+  update(id: number) {
     return `This action updates a #${id} sysRole`
   }
 

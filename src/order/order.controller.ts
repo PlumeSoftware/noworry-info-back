@@ -1,8 +1,11 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common'
 import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user.guard'
+import { AuthToken } from 'src/decorators/token'
+import { SysUserTokenContain } from 'src/sys-user/dto/login-sys-user.dto'
 import { OrderService } from './order.service'
-import { CreateOrderTransformedDto } from './dto/create-order.dto'
+import type { CreateOrderTransformedDto } from './dto/create-order.dto'
 import { OrderCreateValidateAndTransformPipe } from './pipes/create-order.pipe'
+import { OrderCreateValidateTokenPipe } from './pipes/vertify-order-token.pipe'
 
 @Controller('order')
 export class OrderController {
@@ -10,8 +13,10 @@ export class OrderController {
 
   @UseGuards(SysUserAuthGuard)
   @Post()
-  create(@Body(OrderCreateValidateAndTransformPipe) createOrderDto: CreateOrderTransformedDto) {
-    return this.orderService.create(createOrderDto)
+  create(
+    @Body(OrderCreateValidateAndTransformPipe) createOrderDto: Omit<CreateOrderTransformedDto, 'charger'>,
+    @AuthToken(OrderCreateValidateTokenPipe) tokenContain: SysUserTokenContain) {
+    return this.orderService.create({ ...createOrderDto, charger: tokenContain.uuid })
   }
 
   @Get()
@@ -21,7 +26,7 @@ export class OrderController {
 
   @UseGuards(SysUserAuthGuard)
   @Get(':uuid')
-  findOne(@Param('uuid', new ParseUUIDPipe({ version: '5' })) uuid: string) {
+  findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
     return this.orderService.findOne(uuid)
   }
 

@@ -3,32 +3,19 @@ import type {
   PipeTransform,
 } from '@nestjs/common'
 import {
-  BadRequestException,
-  Inject,
-  UnauthorizedException,
+  BadRequestException, Injectable,
 } from '@nestjs/common'
 import { ErrCode } from 'src/filters/errcode.constant'
-import { JwtService } from '@nestjs/jwt'
-import type { SysUserTokenContain } from 'src/sys-user/dto/login-sys-user.dto'
-import { AuthToken } from 'src/decorators/token'
 import type { CreateOrderDto, CreateOrderTransformedDto } from '../dto/create-order.dto'
 
-export class OrderCreateValidateAndTransformPipe implements PipeTransform<CreateOrderDto, CreateOrderTransformedDto> {
-  constructor(
-    @Inject(JwtService) private jwtService: JwtService,
-    @AuthToken() private token: string,
-  ) {}
+@Injectable()
+export class OrderCreateValidateAndTransformPipe implements PipeTransform<CreateOrderDto, Omit<CreateOrderTransformedDto, 'charger'>> {
+  constructor() {}
 
-  transform(value: CreateOrderDto, _: ArgumentMetadata): CreateOrderTransformedDto {
+  transform(value: CreateOrderDto, _: ArgumentMetadata): Omit<CreateOrderTransformedDto, 'charger'> {
     /*
       还需要检查OredrDetail[]的类型
   */
-
-    const token = this.token
-    const jwtInfo = this.jwtService.decode(token) as SysUserTokenContain
-
-    if (!('uuid' in jwtInfo))
-      throw new UnauthorizedException({ cause: 'missing uuid in token', errcode: ErrCode.TokenMissingUuid })
     if (!('expectedDateFrom' in value))
       throw new BadRequestException({ cause: 'missing expectedDateFrom', errcode: ErrCode.MissingSomeFileds })
     if (!('expectedDateTo' in value))
@@ -42,10 +29,9 @@ export class OrderCreateValidateAndTransformPipe implements PipeTransform<Create
     if (value.expectedDateFrom > value.expectedDateTo)
       throw new BadRequestException({ cause: 'timeFrom can\'t > timeTo', errcode: ErrCode.TimeReverse })
 
-    const res: CreateOrderTransformedDto
+    const res: Omit<CreateOrderTransformedDto, 'charger'>
      = {
        ...value,
-       charger: jwtInfo.uuid,
        expectedDateFrom: new Date(value.expectedDateFrom),
        expectedDateTo: new Date(value.expectedDateTo),
      }

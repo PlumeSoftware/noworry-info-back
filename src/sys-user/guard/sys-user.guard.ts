@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { AuthToken } from 'src/decorators/token'
-
+import type { Request } from 'express'
+import { extractToken } from 'src/decorators/token'
 import { ErrCode } from 'src/filters/errcode.constant'
 
 @Injectable()
@@ -18,16 +18,16 @@ export class SysUserAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-    @AuthToken() private readonly token: string,
   ) {}
 
-  async canActivate(_: ExecutionContext): Promise<boolean> {
-    if (!this.token)
+  async canActivate(ctx: ExecutionContext): Promise<boolean> {
+    const token = extractToken(ctx.switchToHttp().getRequest<Request>().headers?.authorization)
+    if (!token)
       throw new BadRequestException({ cause: 'token is required', errcode: ErrCode.MissingToken })
 
     try {
       await this.jwtService.verifyAsync(
-        this.token, { secret: this.configService.get('secret.jwtKey') },
+        token, { secret: this.configService.get('secret.jwtKey') },
       )
     }
     catch {

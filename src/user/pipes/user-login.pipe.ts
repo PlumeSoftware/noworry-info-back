@@ -5,11 +5,13 @@ import type {
 import {
   BadRequestException,
   Inject,
+  Injectable,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ErrCode } from 'src/filters/errcode.constant'
 import type { GetOpenIdMustContain, WxServerReturn } from '../dto/create-user.dto'
 
+@Injectable()
 export class UserCreateValidatePipe implements PipeTransform<GetOpenIdMustContain, Promise<WxServerReturn>> {
   constructor(@Inject(ConfigService) private configService: ConfigService) {}
   async transform(value: GetOpenIdMustContain, _: ArgumentMetadata): Promise<WxServerReturn> {

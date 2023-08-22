@@ -5,11 +5,13 @@ import type {
 import {
   BadRequestException,
   Inject,
+  Injectable,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ErrCode } from 'src/filters/errcode.constant'
 import type { CreateSysUserDto } from '../dto/create-sys-user.dto'
 
+@Injectable()
 export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, CreateSysUserDto> {
   constructor(@Inject(ConfigService) private configService: ConfigService) {}
   transform(value: CreateSysUserDto, _: ArgumentMetadata): CreateSysUserDto {
@@ -39,7 +41,7 @@ export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, 
   }
 
   static verifyUserName(userName: string) {
-    return userName.length < 30
+    return userName.length < 30 && userName.length > 1
   }
 
   static verifyEmail(email: string) {
@@ -52,9 +54,9 @@ export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, 
   密码要求：
     6 < length < 30
     必须包含数字和英文
-    可以包含使用特殊字符(!#$%^&*)
+    可以包含使用特殊字符(!#$%^&*_@())
 */
-    const reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!#$%^&*]{6,30}$/
+    const reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!#$%^&*_@()]{6,30}$/
     return reg.test(psw)
   }
 }

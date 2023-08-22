@@ -9,12 +9,13 @@ import { OrderModule } from './order/order.module'
 import cfg from './config/cfg'
 import { UserModule } from './user/user.module'
 import { AtomOrderModule } from './atom-order/atom-order.module'
-import { SysRoleModule } from './sys-role/sys-role.module';
+import { SysRoleModule } from './sys-role/sys-role.module'
+import { HookModule } from './hook/hook.module'
 
 @Module({
-  imports: [UserModule, SysUserModule, DBModule, AuthModule, ConfigModule.forRoot({
+  imports: [UserModule, DBModule, AuthModule, ConfigModule.forRoot({
     load: [cfg],
-  }), OrderModule, AtomOrderModule, SysRoleModule],
+  }), OrderModule, AtomOrderModule, SysRoleModule, HookModule, SysUserModule],
   controllers: [AppController],
   providers: [AppService],
 })

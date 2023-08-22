@@ -62,7 +62,7 @@ export class SysUser {
   create_ip: string
 
   @OneToOne(() => SysRole)
-  @JoinColumn()
+  @JoinColumn({ name: 'sys_role_id' })
   role: SysRole
 
   @Column(

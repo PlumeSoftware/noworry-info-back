@@ -6,42 +6,31 @@ import {
   Injectable,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { AuthToken } from 'src/decorators/token'
+import { extractToken } from 'src/decorators/token'
 import type { SysUserTokenContain } from 'src/sys-user/dto/login-sys-user.dto'
-import { SysUser } from 'src/sys-user/entities/sys-user.entity'
 import { Reflector } from '@nestjs/core'
 import { createMongoAbility } from '@casl/ability'
 import type { InjectedRoles } from 'src/decorators/needRole'
+import type { Request } from 'express'
 import type { Actions, Subjects } from '../entities/sys-role.entity'
-import { SysRole } from '../entities/sys-role.entity'
+import { SysRoleService } from '../sys-role.service'
 
 @Injectable()
 export class SysUserRoleGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private reflector: Reflector,
-    @InjectRepository(SysRole) private readonly sysRoleRepository: Repository<SysRole>,
-    @AuthToken() private readonly token: string,
+    private readonly sysRoleService: SysRoleService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // 获得访问当前路由所须的权限
     const { actions, subjects } = this.reflector.get<InjectedRoles>('ablity', context.getHandler())
     // 通过token查到当前是谁在访问
-    const tokenInfo = this.jwtService.decode(this.token) as SysUserTokenContain
-    const queryBuilder = this.sysRoleRepository.createQueryBuilder('sys_role')
-    const sysRole = await queryBuilder
-      .where(`
-        sys_role.id = ${
-        queryBuilder.subQuery()
-        .select('sys_user.sys_role_id')
-        .from(SysUser, 'sys_user')
-        .where('sys_user.uuid = :sys_user_uuid')
-        .setParameter('sys_user_uuid', tokenInfo.uuid)
-      }`)
-      .getOne()
+    const token = extractToken(context.switchToHttp().getRequest<Request>().headers?.authorization)
+    const tokenInfo = this.jwtService.decode(token) as SysUserTokenContain
+
+    const sysRole = await this.sysRoleService.getSysUserRole(tokenInfo.uuid)
     // 获得当前访问者的权限
     const ability = createMongoAbility<[Actions, Subjects]>(sysRole.permissions)
 

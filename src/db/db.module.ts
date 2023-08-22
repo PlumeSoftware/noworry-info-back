@@ -1,6 +1,8 @@
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { Order } from 'src/entity/order.entity'
+import { AtomOrder } from 'src/atom-order/entities/atom-order.entity'
+import { Order } from 'src/order/entities/order.entity'
+import { SysRole } from 'src/sys-role/entities/sys-role.entity'
 
 // import { Order } from 'src/order/entities/order.entity'
 import { SysUser } from 'src/sys-user/entities/sys-user.entity'
@@ -17,7 +19,7 @@ export const DBModule = TypeOrmModule.forRootAsync({
       username: configService.get('database.userName'),
       password: configService.get('database.password'),
       database: configService.get('database.database'),
-      entities: [SysUser, User, Order],
+      entities: [SysUser, User, Order, AtomOrder, SysRole],
       synchronize: true,
     }),
 })

@@ -15,7 +15,6 @@ export class AtomOrder {// 用于表示单个刷位的情况
   @Generated('uuid')
   uuid: string
 
-  @Column({ name: 'in_charge', comment: '关联的订单' })
   @OneToOne(() => Order)
   @JoinColumn()
     belongTo: Order

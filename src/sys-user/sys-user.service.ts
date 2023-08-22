@@ -4,20 +4,21 @@ import { Repository } from 'typeorm'
 import { PBKDF2 } from 'crypto-js'
 import { ConfigService } from '@nestjs/config'
 import { ErrCode } from 'src/filters/errcode.constant'
-import { SysRole } from 'src/sys-role/entities/sys-role.entity'
+import { SysRoleService } from 'src/sys-role/sys-role.service'
 import { AuthService } from '../auth/auth.service'
 import type { CreateSysUserDto } from './dto/create-sys-user.dto'
 import { SysUser } from './entities/sys-user.entity'
 import type { LoginSysUserDto } from './dto/login-sys-user.dto'
 import type { UpdateSysUserDto } from './dto/update-sys-user.dto'
+import type { SysUserFindOneRO } from './dto/findone-sys-user.ro'
 
 @Injectable()
 export class SysUserService {
   constructor(
     private readonly authService: AuthService,
     @InjectRepository(SysUser) private readonly sysUserRepository: Repository<SysUser>,
-    @InjectRepository(SysRole) private readonly sysRoleRepository: Repository<SysRole>,
-    private configService: ConfigService,
+    private readonly sysRoleService: SysRoleService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createUserDto: CreateSysUserDto & { ip: string }) {
@@ -27,7 +28,7 @@ export class SysUserService {
     // 保存数据
     let role = null
     if ('role' in createUserDto)
-      role = await this.sysRoleRepository.findOne({ where: { name: createUserDto.role } })
+      role = await this.sysRoleService.findOne(createUserDto.role)
     const sysUser = new SysUser()
     sysUser.user_name = createUserDto.userName
     sysUser.psw = createUserDto.psw
@@ -81,19 +82,40 @@ export class SysUserService {
     return this.sysUserRepository.find()
   }
 
-  findOne(id: number): Promise<SysUser | null>
-  findOne(uuid: string): Promise<SysUser | null>
-  findOne(idLike: string | number): Promise<SysUser | null> {
-    if (typeof idLike === 'string')
-      return this.sysUserRepository.findOne({ where: { uuid: idLike } })
-    if (typeof idLike === 'number')
-      return this.sysUserRepository.findOne({ where: { id: idLike } })
+  findOne(id: number): Promise<SysUserFindOneRO | null>
+  findOne(uuid: string): Promise<SysUserFindOneRO | null>
+  async findOne(idLike: string | number): Promise<SysUserFindOneRO | null> {
+    let sysUser: SysUser | null = null
+    if (typeof idLike === 'string') {
+      sysUser = await this.sysUserRepository.findOne({
+        where: { uuid: idLike },
+        relations: { role: true },
+      })
+    }
+    if (typeof idLike === 'number') {
+      sysUser = await this.sysUserRepository.findOne({
+        where: { id: idLike },
+        relations: { role: true },
+      })
+    }
+
+    if (sysUser) {
+      return {
+        uuid: sysUser.uuid,
+        userName: sysUser.user_name,
+        phone: sysUser.phone,
+        email: sysUser.email,
+        permissions: sysUser.role.permissions,
+      }
+    }
     return null
   }
 
-  update(uuid: string, updateSysUserDto: UpdateSysUserDto) {
+  async update(uuid: string, updateSysUserDto: UpdateSysUserDto) {
     // TODO:兼容更新role
-    return this.sysUserRepository.update(uuid, updateSysUserDto)
+    const role = await this.sysRoleService.findOne(updateSysUserDto.role)
+
+    return await this.sysUserRepository.update(uuid, { ...updateSysUserDto, role })
   }
 
   // remove(id: number) {

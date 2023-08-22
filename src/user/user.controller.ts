@@ -1,17 +1,20 @@
-import { Body, Controller, Delete, Get, Ip, Param, Post, UseFilters } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Ip, Param, Post, UseFilters, UseGuards } from '@nestjs/common'
 import { DBDuplicateExceptionFilter } from 'src/filters/db-duplicate.filter'
 import { BadRequestExceptionFilter } from 'src/filters/BuiltInException'
+import { NeedRole } from 'src/decorators/needRole'
+import { SysUserRoleGuard } from 'src/sys-role/guard/sys-role-permission.guard'
+import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user.guard'
 import { UserService } from './user.service'
 import type { WxServerReturn } from './dto/create-user.dto'
 import { UserCreateValidatePipe } from './pipes/user-login.pipe'
 
+@UseFilters(DBDuplicateExceptionFilter, BadRequestExceptionFilter)// 捕获数据库唯一性约束异常
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
   ) {}
 
-  @UseFilters(new DBDuplicateExceptionFilter(), BadRequestExceptionFilter)// 捕获数据库唯一性约束异常
   @Post('login')
   async login(@Body(UserCreateValidatePipe) createUserDto: Promise<WxServerReturn>, @Ip() ip: string) {
     const res = await createUserDto
@@ -19,6 +22,8 @@ export class UserController {
   }
 
   @Get()
+  @NeedRole('read', 'User')// 需要SysUser的read权限
+  @UseGuards(SysUserAuthGuard/* 验证登录 */, SysUserRoleGuard/* 验证权限 */)
   findAll() {
     return this.userService.findAll()
   }

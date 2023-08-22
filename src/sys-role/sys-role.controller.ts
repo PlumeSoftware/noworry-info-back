@@ -3,7 +3,6 @@ import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user.guard'
 import { NeedRole } from 'src/decorators/needRole'
 import { SysRoleService } from './sys-role.service'
 import { CreateSysRoleDto } from './dto/create-sys-role.dto'
-import { UpdateSysRoleDto } from './dto/update-sys-role.dto'
 import { SysUserRoleGuard } from './guard/sys-role-permission.guard'
 
 @Controller('sys-role')
@@ -28,8 +27,8 @@ export class SysRoleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSysRoleDto: UpdateSysRoleDto) {
-    return this.sysRoleService.update(+id, updateSysRoleDto)
+  update(@Param('id') id: string, @Body() updateSysRoleDto: any) {
+    return this.sysRoleService.update(+id)
   }
 
   @Delete(':id')
