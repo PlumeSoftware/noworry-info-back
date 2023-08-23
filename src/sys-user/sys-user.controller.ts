@@ -5,7 +5,7 @@ import { NeedRole } from 'src/decorators/needRole'
 import { SysUserRoleGuard } from 'src/sys-role/guard/sys-role-permission.guard'
 import { SysUserService } from './sys-user.service'
 import { CreateSysUserDto } from './dto/create-sys-user.dto'
-import { VerifyCreateUserDtoPipe } from './pipes/sys-user-login.pipe'
+import { VerifyCreateUserDtoPipe, VerifyLoginUserDtoPipe } from './pipes/sys-user-create.pipe'
 import { LoginSysUserDto } from './dto/login-sys-user.dto'
 import { UpdateSysUserDto } from './dto/update-sys-user.dto'
 import { SysUserAuthGuard } from './guard/sys-user.guard'
@@ -25,7 +25,7 @@ export class SysUserController {
 
   @UseFilters(BadRequestExceptionFilter, UnauthorizedExceptionFilter)
   @Post('login')
-  login(@Body() loginSysUserDto: LoginSysUserDto, @Ip() ip: string) {
+  login(@Body(VerifyLoginUserDtoPipe) loginSysUserDto: LoginSysUserDto, @Ip() ip: string) {
     return this.userService.login({ ...loginSysUserDto, ip })
   }
 

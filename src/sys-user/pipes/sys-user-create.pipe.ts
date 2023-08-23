@@ -10,6 +10,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { ErrCode } from 'src/filters/errcode.constant'
 import type { CreateSysUserDto } from '../dto/create-sys-user.dto'
+import { LoginSysUserDto } from '../dto/login-sys-user.dto'
 
 @Injectable()
 export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, CreateSysUserDto> {
@@ -29,10 +30,6 @@ export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, 
       throw new BadRequestException({ cause: 'psw is invalid', errcode: ErrCode.InvalidPsw })
 
     return value
-  }
-
-  static getWxOpenIdUrl(code: string, appid: string, appsecret: string) {
-    return `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${appsecret}&js_code=${code}&grant_type=authorization_code`
   }
 
   static verifyFileds(createUserDto: CreateSysUserDto) {
@@ -59,4 +56,29 @@ export class VerifyCreateUserDtoPipe implements PipeTransform<CreateSysUserDto, 
     const reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!#$%^&*_@()]{6,30}$/
     return reg.test(psw)
   }
+}
+
+
+@Injectable()
+export class VerifyLoginUserDtoPipe implements PipeTransform<LoginSysUserDto, LoginSysUserDto> {
+  constructor(@Inject(ConfigService) private configService: ConfigService) {}
+  transform(value: CreateSysUserDto, _: ArgumentMetadata): CreateSysUserDto {
+    if (!VerifyLoginUserDtoPipe.verifyFileds(value))
+      throw new BadRequestException({ cause: 'missing require fields', errcode: ErrCode.MissingSomeFileds })
+
+    // 还原前端加密的密码，注意要在解密后才对密码进行验证
+    // value.psw = AES.encrypt(this.configService.get(secret.decryptFeKey), body.psw).toString()
+
+    return value
+  }
+
+  static verifyFileds(createUserDto: CreateSysUserDto) {
+    return 'psw' in createUserDto && ('email' in createUserDto || 'phone' in createUserDto)
+  }
+
+  static verifyEmail(email: string) {
+    const reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+    return reg.test(email)
+  }
+
 }

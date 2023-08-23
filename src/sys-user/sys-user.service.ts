@@ -53,8 +53,6 @@ export class SysUserService {
   }
 
   async login(loginSysUserDto: LoginSysUserDto & { ip: string }) {
-    if (!loginSysUserDto.psw)
-      throw new BadRequestException({ cause: 'psw is required', errcode: ErrCode.MissingPsw })
     let sysUser: SysUser | null
     // 优先使用email登录
     if ('email' in loginSysUserDto)
