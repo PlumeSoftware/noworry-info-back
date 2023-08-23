@@ -1,9 +1,6 @@
-import { Body, Controller, Delete, Get, Ip, Param, Post, UseFilters, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Ip, Param, Post, UseFilters } from '@nestjs/common'
 import { DBDuplicateExceptionFilter } from 'src/filters/db-duplicate.filter'
-import { BadRequestExceptionFilter } from 'src/filters/BuiltInException'
-import { NeedRole } from 'src/decorators/needRole'
-import { SysUserRoleGuard } from 'src/sys-role/guard/sys-role-permission.guard'
-import { SysUserAuthGuard } from 'src/sys-user/guard/sys-user.guard'
+import { BadRequestExceptionFilter } from 'src/filters/built-in-exception'
 import { UserService } from './user.service'
 import type { WxServerReturn } from './dto/create-user.dto'
 import { UserCreateValidatePipe } from './pipes/user-login.pipe'
@@ -21,12 +18,12 @@ export class UserController {
     return this.userService.login({ openId: res.openid, ip })
   }
 
-  @Get()
-  @NeedRole('read', 'User')// 需要SysUser的read权限
-  @UseGuards(SysUserAuthGuard/* 验证登录 */, SysUserRoleGuard/* 验证权限 */)
-  findAll() {
-    return this.userService.findAll()
-  }
+  // @Get()
+  // @NeedRole('read', 'User')// 需要SysUser的read权限
+  // @UseGuards(SysUserAuthGuard/* 验证登录 */, SysUserRoleGuard/* 验证权限 */)
+  // findSome(@Body(UserCreateValidatePipe) findSomeTransformedDto: FindSomeUserTransformedDto) {
+  //   return this.userService.findSome()
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

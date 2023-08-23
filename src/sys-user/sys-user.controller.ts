@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Ip, Param, ParseUUIDPipe, Patch, Post, UseFilters, UseGuards } from '@nestjs/common'
 import { DBDuplicateExceptionFilter } from 'src/filters/db-duplicate.filter'
-import { BadRequestExceptionFilter, UnauthorizedExceptionFilter } from 'src/filters/BuiltInException'
+import { BadRequestExceptionFilter, UnauthorizedExceptionFilter } from 'src/filters/built-in-exception'
 import { NeedRole } from 'src/decorators/needRole'
 import { SysUserRoleGuard } from 'src/sys-role/guard/sys-role-permission.guard'
 import { SysUserService } from './sys-user.service'

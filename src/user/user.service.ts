@@ -25,9 +25,16 @@ export class UserService {
     return { token: await this.authService.assignToken(res.generatedMaps[0].uuid) }
   }
 
-  findAll() {
-    return 'This action returns all user'
-  }
+  // async findSome(pageNo: number, pageSize: number) {
+  //   const qb = this.userRepository.createQueryBuilder('user')
+  //   const users = await qb
+  //     .where('user.create_time BETWEEN :create_date_from AND :create_date_to')
+  //     .andWhere('user.last_login_time BETWEEN :login_date_from AND :login_date_to')
+  //     .limit(pageNo * pageSize)
+  //     .setParameters({})
+  //     .getMany()
+  //   return 'This action returns all user'
+  // }
 
   findOne(id: number) {
     return `This action returns a #${id} user`
