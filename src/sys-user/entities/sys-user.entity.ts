@@ -1,5 +1,5 @@
 import { SysRole } from 'src/sys-role/entities/sys-role.entity'
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 // 系统用户表
 @Entity({ name: 'sys_user' })
@@ -61,7 +61,7 @@ export class SysUser {
   )
   create_ip: string
 
-  @OneToOne(() => SysRole)
+  @ManyToOne(() => SysRole)
   @JoinColumn({ name: 'sys_role_id' })
   role: SysRole
 

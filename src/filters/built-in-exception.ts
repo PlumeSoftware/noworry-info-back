@@ -1,5 +1,5 @@
 import type { ArgumentsHost, ExceptionFilter, HttpException } from '@nestjs/common'
-import { BadRequestException, Catch } from '@nestjs/common'
+import { BadRequestException, Catch, UnauthorizedException } from '@nestjs/common'
 import type { Response } from 'express'
 import type { CustomError } from './errcode.constant'
 
@@ -19,4 +19,4 @@ class BuiltInExceptionFilterFactory {
   }
 }
 export const BadRequestExceptionFilter = BuiltInExceptionFilterFactory.createBadRequestExceptionFilter(BadRequestException)
-export const UnauthorizedExceptionFilter = BuiltInExceptionFilterFactory.createBadRequestExceptionFilter(BadRequestException)
+export const UnauthorizedExceptionFilter = BuiltInExceptionFilterFactory.createBadRequestExceptionFilter(UnauthorizedException)

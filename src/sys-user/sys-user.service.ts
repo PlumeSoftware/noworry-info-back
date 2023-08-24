@@ -5,6 +5,7 @@ import { PBKDF2 } from 'crypto-js'
 import { ConfigService } from '@nestjs/config'
 import { ErrCode } from 'src/filters/errcode.constant'
 import { SysRoleService } from 'src/sys-role/sys-role.service'
+import { SysRole } from 'src/sys-role/entities/sys-role.entity'
 import { AuthService } from '../auth/auth.service'
 import type { CreateSysUserDto } from './dto/create-sys-user.dto'
 import { SysUser } from './entities/sys-user.entity'
@@ -111,9 +112,32 @@ export class SysUserService {
 
   async update(uuid: string, updateSysUserDto: UpdateSysUserDto) {
     // TODO:兼容更新role
-    const role = await this.sysRoleService.findOne(updateSysUserDto.role)
+    const updateInfo = new SysUser()
+    const sysRole = new SysRole()
+    sysRole.id = 10
+    updateInfo.user_name = updateSysUserDto?.userName
+    if ('psw' in updateSysUserDto) {
+      updateInfo.psw = PBKDF2(updateSysUserDto.psw, this.configService.get('secret.sysUserPswSalt'), { keySize: 8 })
+        .toString()
+    }
+    updateInfo.email = 'email' in updateSysUserDto ? updateSysUserDto.email : undefined
+    updateInfo.phone = 'phone' in updateSysUserDto ? updateSysUserDto.phone : undefined
+    updateInfo.role = sysRole
 
-    return await this.sysUserRepository.update(uuid, { ...updateSysUserDto, role })
+    const qb = this.sysUserRepository.createQueryBuilder()
+
+    qb
+      .update(SysUser)
+      .where('uuid = :uuid')
+      .set(updateInfo)
+      .setParameter('uuid', uuid)
+      .execute()
+    console.error(qb
+      .update(SysUser)
+      .where('uuid = :uuid')
+      .set(updateInfo)
+      .setParameter('uuid', uuid)
+      .getQueryAndParameters())
   }
 
   // remove(id: number) {

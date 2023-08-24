@@ -3,7 +3,7 @@ import type {
   ExecutionContext,
 } from '@nestjs/common'
 import {
-  Injectable,
+  Injectable, UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { extractToken } from 'src/decorators/token'
@@ -12,6 +12,7 @@ import { Reflector } from '@nestjs/core'
 import { createMongoAbility } from '@casl/ability'
 import type { InjectedRoles } from 'src/decorators/needRole'
 import type { Request } from 'express'
+import { ErrCode } from 'src/filters/errcode.constant'
 import type { Actions, Subjects } from '../entities/sys-role.entity'
 import { SysRoleService } from '../sys-role.service'
 
@@ -32,8 +33,10 @@ export class SysUserRoleGuard implements CanActivate {
 
     const sysRole = await this.sysRoleService.getSysUserRole(tokenInfo.uuid)
     // 获得当前访问者的权限
-    const ability = createMongoAbility<[Actions, Subjects]>(sysRole.permissions)
+    const ability = createMongoAbility<[Actions, Subjects]>(sysRole?.permissions)
+    if (!ability.can(actions, subjects))// 测试是否通过
+      throw new UnauthorizedException({ cause: 'permission deny', errcode: ErrCode.NoPermission })
 
-    return ability.can(actions, subjects)// 测试是否通过
+    return true
   }
 }
