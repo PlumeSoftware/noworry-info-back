@@ -21,7 +21,7 @@ export class OnCreateService implements OnApplicationBootstrap {
   private createKingRole() {
     // 在创建SysRoleService时默认插入一个具有全部权限的SysUser
     const king: CreateSysRoleDto = {
-      ability: [{ action: 'manage', subject: 'all' }],
+      abilities: [{ action: 'manage', subject: 'all' }],
       roleName: 'king',
     }
 

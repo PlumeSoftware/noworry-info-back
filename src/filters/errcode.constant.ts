@@ -13,7 +13,8 @@ export enum ErrCode {
   FiledsFormatedErr = 1012,
   TimeReverse = 1013,
   InvalidRole = 1014,
-
+  InvalidRoleName = 1015,
+  InvalidAbilities = 1016,
   NoPermission = 2001,
 
   WxLoginWithoutCode = 4002,

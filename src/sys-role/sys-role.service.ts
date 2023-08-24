@@ -12,13 +12,14 @@ export class SysRoleService {
   ) {}
 
   async create(createSysRoleDto: CreateSysRoleDto) {
-    await this.sysRoleRepository.insert(
-      { name: createSysRoleDto.roleName, permissions: createSysRoleDto.ability },
+    const res = await this.sysRoleRepository.insert(
+      { name: createSysRoleDto.roleName, permissions: createSysRoleDto.abilities },
     )
+    return { roleId: res.generatedMaps[0].id } // 是创建的角色id
   }
 
   findAll() {
-    return 'This action returns all sysRole'
+    return this.sysRoleRepository.find()
   }
 
   findOne(roleName: string): Promise<SysRole>
