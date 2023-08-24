@@ -126,18 +126,12 @@ export class SysUserService {
 
     const qb = this.sysUserRepository.createQueryBuilder()
 
-    qb
+    await qb
       .update(SysUser)
       .where('uuid = :uuid')
       .set(updateInfo)
       .setParameter('uuid', uuid)
       .execute()
-    console.error(qb
-      .update(SysUser)
-      .where('uuid = :uuid')
-      .set(updateInfo)
-      .setParameter('uuid', uuid)
-      .getQueryAndParameters())
   }
 
   // remove(id: number) {
