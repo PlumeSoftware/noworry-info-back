@@ -1,37 +1,22 @@
 import { AtomOrder } from 'src/atom-order/entities/atom-order.entity'
-import { SysUser } from 'src/sys-user/entities/sys-user.entity'
-import { User } from 'src/user/entities/user.entity'
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Generated, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
-export enum OrderStatus {
-  // 已创建、已支付、已填表、有修改、处理中、已完成
-  // 有修改、递签中、已完成 属于管理员手动操作
-  'CREATED' = 0,
-  'PAID' = 1,
-  'FILLED' = 2,
-  'MODIFIED' = 3,
-  'REFRESHING' = 4,
-  'RESERVED' = 5,
-  'DELIVERING' = 6,
-  'FINISHED' = 7,
-}
 // 订单表
-@Entity({ name: 'order' })
-export class Order {
+@Entity({ name: 'commodity' })
+export class Commodity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '主键' })
     id: number
 
   @Generated('uuid')
-  @Column({ name: 'order_uuid', comment: '订单号' })
-    orderUuid: string
+  @Column({ name: 'commodity_uuid', comment: '商品ID' })
+    commodityUuid: string
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'payer_id' })
-    payer: User
+  @Column({ comment: '商品价格' })
+    price: number
 
-  @ManyToOne(() => SysUser)
-  @JoinColumn({ name: 'incharge_sys_user_id' })
-    inCharge: SysUser
+  // @ManyToOne(() => SysUser)
+  // @JoinColumn({ name: 'to_city' })
+  //   city: string
 
   @OneToMany(() => AtomOrder, atomOrder => atomOrder.belongTo)
   @JoinColumn({ name: 'sys_user_id' })
@@ -42,9 +27,6 @@ export class Order {
 
   @Column({ comment: '是否加急' })
     isWorry: boolean
-
-  @Column({ name: 'status', type: 'int', comment: '订单状态', default: OrderStatus.CREATED })
-    status: OrderStatus
 
   @Column({ comment: '刷签人数', unsigned: true, default: 1, nullable: false })
     count: number

@@ -16,18 +16,7 @@ export class OrderCreateValidateAndTransformPipe implements PipeTransform<Create
     /*
       还需要检查OredrDetail[]的类型
   */
-    if (!('expectedDateFrom' in value))
-      throw new BadRequestException({ cause: 'missing expectedDateFrom', errcode: ErrCode.MissingSomeFileds })
-    if (!('expectedDateTo' in value))
-      throw new BadRequestException({ cause: 'missing expectedDateTo', errcode: ErrCode.MissingSomeFileds })
-    if (!('isWorry' in value))
-      throw new BadRequestException({ cause: 'missing isWorry', errcode: ErrCode.MissingSomeFileds })
-    if (!('city' in value))
-      throw new BadRequestException({ cause: 'missing isWorry', errcode: ErrCode.MissingSomeFileds })
-    if (!(Number.isInteger(value.expectedDateFrom) && (Number.isInteger(value.expectedDateTo))))
-      throw new BadRequestException({ cause: 'expectedDateFrom or expectedDateTo formated error', errcode: ErrCode.FiledsFormatedErr })
-    if (value.expectedDateFrom > value.expectedDateTo)
-      throw new BadRequestException({ cause: 'timeFrom can\'t > timeTo', errcode: ErrCode.TimeReverse })
+    OrderCreateValidateAndTransformPipe.verifyFileds(value)
 
     const res: Omit<CreateOrderTransformedDto, 'charger'>
      = {
@@ -35,7 +24,34 @@ export class OrderCreateValidateAndTransformPipe implements PipeTransform<Create
        expectedDateFrom: new Date(value.expectedDateFrom),
        expectedDateTo: new Date(value.expectedDateTo),
      }
-
     return res
+  }
+
+  static verifyFileds(value: CreateOrderDto) {
+    if (!('payerUuid' in value))
+      throw new BadRequestException({ cause: 'missing payerUuid', errcode: ErrCode.MissingSomeFileds })
+    if (!('expectedDateFrom' in value))
+      throw new BadRequestException({ cause: 'missing expectedDateFrom', errcode: ErrCode.MissingSomeFileds })
+    if (!('expectedDateTo' in value))
+      throw new BadRequestException({ cause: 'missing expectedDateTo', errcode: ErrCode.MissingSomeFileds })
+    if (typeof value?.isWorry !== 'boolean')
+      throw new BadRequestException({ cause: 'invalid isWorry', errcode: ErrCode.InvalidFileds })
+    if (!('city' in value))
+      throw new BadRequestException({ cause: 'missing city', errcode: ErrCode.MissingSomeFileds })
+    if (typeof value?.commodityUuid !== 'string')
+      throw new BadRequestException({ cause: 'missing commodityUuid', errcode: ErrCode.MissingSomeFileds })
+    if (!(Number.isInteger(value.expectedDateFrom) && (Number.isInteger(value.expectedDateTo))))
+      throw new BadRequestException({ cause: 'expectedDateFrom or expectedDateTo formated error', errcode: ErrCode.FiledsFormatedErr })
+    if (value.expectedDateFrom > value.expectedDateTo)
+      throw new BadRequestException({ cause: 'timeFrom can\'t > timeTo', errcode: ErrCode.TimeReverse })
+    if (!Array.isArray(value.details))
+      throw new BadRequestException({ cause: 'invalid details', errcode: ErrCode.InvalidFileds })
+    if (value.details.length <= 0)
+      throw new BadRequestException({ cause: 'invalid details', errcode: ErrCode.InvalidFileds })
+
+    if (!value.details.every((detail) => {
+      return typeof detail?.customerEmail === 'string' && detail?.customerPhone === 'string' && detail?.customerEmail === 'string'
+    }))
+      throw new BadRequestException({ cause: 'invalid details', errcode: ErrCode.InvalidFileds })
   }
 }

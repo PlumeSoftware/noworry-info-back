@@ -11,11 +11,12 @@ import { UserModule } from './user/user.module'
 import { AtomOrderModule } from './atom-order/atom-order.module'
 import { SysRoleModule } from './sys-role/sys-role.module'
 import { HookModule } from './hook/hook.module'
+import { CommodityModule } from './commodity/commodity.module'
 
 @Module({
   imports: [UserModule, DBModule, AuthModule, ConfigModule.forRoot({
     load: [cfg],
-  }), OrderModule, AtomOrderModule, SysRoleModule, HookModule, SysUserModule],
+  }), OrderModule, AtomOrderModule, SysRoleModule, HookModule, SysUserModule, CommodityModule],
   controllers: [AppController],
   providers: [AppService],
 })

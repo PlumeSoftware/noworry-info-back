@@ -36,7 +36,6 @@ export class SysUserRoleGuard implements CanActivate {
     const ability = createMongoAbility<[Actions, Subjects]>(sysRole?.permissions)
     if (!ability.can(actions, subjects))// 测试是否通过
       throw new UnauthorizedException({ cause: 'permission deny', errcode: ErrCode.NoPermission })
-
     return true
   }
 }

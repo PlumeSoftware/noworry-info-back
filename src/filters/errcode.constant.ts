@@ -15,6 +15,7 @@ export enum ErrCode {
   InvalidRole = 1014,
   InvalidRoleName = 1015,
   InvalidAbilities = 1016,
+  InvalidFileds = 1099,
   NoPermission = 2001,
 
   WxLoginWithoutCode = 4002,
