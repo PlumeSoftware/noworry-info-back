@@ -1,5 +1,5 @@
 import { Order } from 'src/order/entities/order.entity'
-import { Column, Entity, Generated, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 export enum AtomStatus {
   // 准备中，刷位中，已预约
@@ -15,8 +15,8 @@ export class AtomOrder {// 用于表示单个刷位的情况
   @Generated('uuid')
   uuid: string
 
-  @OneToOne(() => Order)
-  @JoinColumn()
+  @ManyToOne(() => Order)
+  @JoinColumn({ name: 'order_id' })
     belongTo: Order
 
   @Column({ name: 'customer_name', type: 'varchar', length: 32, comment: '刷位客户姓名' })
