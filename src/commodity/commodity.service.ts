@@ -4,6 +4,7 @@ import type { CreateCommodityDto } from './dto/create-commodity.dto'
 @Injectable()
 export class CommodityService {
   create(createCommodityDto: CreateCommodityDto) {
+    1
     return 'This action adds a new commodity'
   }
 

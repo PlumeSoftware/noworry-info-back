@@ -13,7 +13,13 @@ export class Commodity {
     commodityUuid: string
 
   @Column()
-    name: string
+    title: string
+
+  @Column()
+    description: string
+
+  @Column()
+     coverPath: string
 
   @Column({ comment: '商品价格' })
     price: number
@@ -26,7 +32,7 @@ export class Commodity {
 
   @ManyToOne(() => SysUser, sysUser => sysUser.id)
   @JoinColumn({ name: 'sys_user_id' })
-    charge: SysUser
+    create: SysUser
 
   @CreateDateColumn({ name: 'create_time', update: false })
     createTime: Date
