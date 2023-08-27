@@ -1,1 +1,6 @@
-export class CreateCommodityDto {}
+export interface CreateCommodityDto {
+  title: string
+  description: string
+  price: number
+
+}

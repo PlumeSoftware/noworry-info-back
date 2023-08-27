@@ -1,9 +1,9 @@
+import { CommodityCategory } from 'src/commodity-category/entities/commodity-category.entity'
 import { SysUser } from 'src/sys-user/entities/sys-user.entity'
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 // 商品表
 @Entity({ name: 'commodity' })
-@Tree('materialized-path')
 export class Commodity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '主键' })
     id: number
@@ -18,21 +18,19 @@ export class Commodity {
   @Column()
     description: string
 
-  @Column()
-     coverPath: string
+  @Column({ name: 'cover_path', comment: '商品封面' })
+    coverPath: string
 
   @Column({ comment: '商品价格' })
     price: number
 
-  @TreeChildren()
-    children: Commodity[]
-
-  @TreeParent()
-    parent: Commodity
+  @ManyToOne(() => CommodityCategory, category => category.id)
+  @JoinColumn({ name: 'category_id' })
+    category: CommodityCategory
 
   @ManyToOne(() => SysUser, sysUser => sysUser.id)
   @JoinColumn({ name: 'sys_user_id' })
-    create: SysUser
+    creater: SysUser
 
   @CreateDateColumn({ name: 'create_time', update: false })
     createTime: Date
