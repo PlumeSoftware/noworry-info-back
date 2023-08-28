@@ -8,7 +8,7 @@ export class CommodityCategory {
   @PrimaryGeneratedColumn({ name: 'id', comment: '主键' })
     id: number
 
-  @Column()
+  @Column({ unique: true })
     name: string
 
   @TreeChildren()

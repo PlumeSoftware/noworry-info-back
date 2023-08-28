@@ -17,7 +17,7 @@ export class DBDuplicateExceptionFilter implements ExceptionFilter {
     }
 
     if (exception.message.includes('Duplicate entry'))
-      return response.status(HttpStatus.CONFLICT).json({ cause: 'duplicate email or phone', errcode: ErrCode.DuplicateEmailOrPhone })
+      return response.status(HttpStatus.CONFLICT).json({ cause: 'duplicate entity', errcode: ErrCode.DuplicateEmailOrPhone })
     return response.status(500).json({ cause: 'unknown error', errcode: ErrCode.UnknownError })
   }
 }
