@@ -54,10 +54,11 @@ export class CommodityCategoryService {
     item.parent = undefined
     item.createTime = undefined
     item.updateTime = undefined
+
     if (!item.children)
-      return
+      return item
     if (item.children.length === 0)
-      return
+      return item
 
     for (const child of item.children)
       this.deleteTreeFileds(child)
