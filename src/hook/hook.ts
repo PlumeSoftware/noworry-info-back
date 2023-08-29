@@ -25,7 +25,7 @@ export class OnCreateService implements OnApplicationBootstrap {
       roleName: 'king',
     }
 
-    this.sysRoleService.create(king).then(() => {
+    this.sysRoleService.create(king).finally(() => {
       const createKingDTO: CreateSysUserDto & { ip: string; role: string } = {
         ip: 'unknow',
         role: king.roleName,
@@ -33,7 +33,7 @@ export class OnCreateService implements OnApplicationBootstrap {
         psw: this.configService.get('superAdmin.psw'),
         email: this.configService.get('superAdmin.email'),
       }
-      this.sysUserService.create(createKingDTO)
+      this.sysUserService.create(createKingDTO).catch(() => {})
     }).catch(() => {})
   }
 }

@@ -54,7 +54,8 @@ export class CommodityCategoryService {
     item.parent = undefined
     item.createTime = undefined
     item.updateTime = undefined
-
+    if (!item.children)
+      return
     if (item.children.length === 0)
       return
 
