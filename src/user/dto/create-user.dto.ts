@@ -12,3 +12,7 @@ export interface WxServerReturn {
   session_key?: string
   unionid?: string
 }
+
+export interface UserJwtPayload {
+  uuid: string
+}

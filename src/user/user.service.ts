@@ -36,8 +36,14 @@ export class UserService {
   //   return 'This action returns all user'
   // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`
+  async findOne(uuid: string) {
+    const user = await this.userRepository.findOne({ where: { uuid } })
+    return {
+      uuid: user.uuid,
+      userName: user.user_name,
+      phone: user.phone,
+      email: user.email,
+    }
   }
 
   update(id: number) {
