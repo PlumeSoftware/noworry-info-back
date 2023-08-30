@@ -18,6 +18,7 @@ import { CommodityCategoryModule } from './commodity-category/commodity-category
   imports: [UserModule, DBModule, AuthModule, ConfigModule.forRoot({
     load: [cfg],
   }), OrderModule, AtomOrderModule, SysRoleModule, HookModule, SysUserModule, CommodityVisaModule, CommodityCategoryModule],
+
   controllers: [AppController],
   providers: [AppService],
 })
