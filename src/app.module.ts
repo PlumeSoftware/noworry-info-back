@@ -11,13 +11,13 @@ import { UserModule } from './user/user.module'
 import { AtomOrderModule } from './atom-order/atom-order.module'
 import { SysRoleModule } from './sys-role/sys-role.module'
 import { HookModule } from './hook/hook.module'
-import { CommodityModule } from './commodity/commodity.module'
+import { CommodityVisaModule } from './commodity-visa/commodity-visa.module'
 import { CommodityCategoryModule } from './commodity-category/commodity-category.module'
 
 @Module({
   imports: [UserModule, DBModule, AuthModule, ConfigModule.forRoot({
     load: [cfg],
-  }), OrderModule, AtomOrderModule, SysRoleModule, HookModule, SysUserModule, CommodityModule, CommodityCategoryModule],
+  }), OrderModule, AtomOrderModule, SysRoleModule, HookModule, SysUserModule, CommodityVisaModule, CommodityCategoryModule],
   controllers: [AppController],
   providers: [AppService],
 })
